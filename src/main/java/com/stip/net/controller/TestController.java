@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.stip.net.base.StipResponse;
+import com.stip.net.example.TestExample;
 import com.stip.net.service.TestService;
 
 @RequestMapping("/test")
@@ -17,7 +18,8 @@ public class TestController {
 	
 	@GetMapping("/getUserInfo")
     public StipResponse getUserInfo() {
-		testService.selectByPrimaryKey("1");
+		TestExample example=new TestExample();
+		testService.selectByExample(example);
 		
 		return StipResponse.success("success");
     }

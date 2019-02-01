@@ -46,6 +46,66 @@ public class TestExample extends BaseModelExample {
 
     protected abstract static class GeneratedCriteria extends BaseCriteria {
 
+        public Criteria andTestIdIsNull() {
+            addCriterion("test.test_id is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andTestIdIsNotNull() {
+            addCriterion("test.test_id is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andTestIdEqualTo(Integer value) {
+            addCriterion("test.test_id =", value, "testId");
+            return (Criteria) this;
+        }
+
+        public Criteria andTestIdNotEqualTo(Integer value) {
+            addCriterion("test.test_id <>", value, "testId");
+            return (Criteria) this;
+        }
+
+        public Criteria andTestIdGreaterThan(Integer value) {
+            addCriterion("test.test_id >", value, "testId");
+            return (Criteria) this;
+        }
+
+        public Criteria andTestIdGreaterThanOrEqualTo(Integer value) {
+            addCriterion("test.test_id >=", value, "testId");
+            return (Criteria) this;
+        }
+
+        public Criteria andTestIdLessThan(Integer value) {
+            addCriterion("test.test_id <", value, "testId");
+            return (Criteria) this;
+        }
+
+        public Criteria andTestIdLessThanOrEqualTo(Integer value) {
+            addCriterion("test.test_id <=", value, "testId");
+            return (Criteria) this;
+        }
+
+        public Criteria andTestIdIn(List<Integer> values) {
+            addCriterion("test.test_id in", values, "testId");
+            return (Criteria) this;
+        }
+
+        public Criteria andTestIdNotIn(List<Integer> values) {
+            addCriterion("test.test_id not in", values, "testId");
+            return (Criteria) this;
+        }
+
+        public Criteria andTestIdBetween(Integer value1, Integer value2) {
+            addCriterion("test.test_id between", value1, value2, "testId");
+            return (Criteria) this;
+        }
+
+        public Criteria andTestIdNotBetween(Integer value1, Integer value2) {
+            addCriterion("test.test_id not between", value1, value2, "testId");
+            return (Criteria) this;
+        }
+
         public Criteria andTestIsNull() {
             addCriterion("test.test is null");
             return (Criteria) this;

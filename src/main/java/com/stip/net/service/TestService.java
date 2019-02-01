@@ -7,5 +7,5 @@ import com.stip.net.example.TestExample;
  /**
  * Extensible custom interface
  **/
-public interface TestService extends IService<Test, TestExample, String> {
+public interface TestService extends IService<Test, TestExample, Integer> {
 }

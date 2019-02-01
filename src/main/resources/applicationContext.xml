@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:aop="http://www.springframework.org/schema/aop" xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xmlns:util="http://www.springframework.org/schema/util" xmlns:task="http://www.springframework.org/schema/task" 
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:sharding="http://shardingsphere.io/schema/shardingsphere/sharding"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans  
+           http://www.springframework.org/schema/beans/spring-beans-3.0.xsd  
+           http://www.springframework.org/schema/aop  
+           http://www.springframework.org/schema/aop/spring-aop-3.0.xsd
+           http://www.springframework.org/schema/context  
+           http://www.springframework.org/schema/context/spring-context-3.0.xsd
+           http://www.springframework.org/schema/mvc 
+           http://www.springframework.org/schema/mvc/spring-mvc-3.2.xsd
+           http://www.springframework.org/schema/task 
+           http://www.springframework.org/schema/task/spring-task-3.2.xsd
+           http://www.springframework.org/schema/tx 
+           http://www.springframework.org/schema/tx/spring-tx-3.0.xsd
+           http://shardingsphere.io/schema/shardingsphere/sharding
+           http://shardingsphere.io/schema/shardingsphere/sharding/sharding.xsd
+           http://www.springframework.org/schema/util 
+           http://www.springframework.org/schema/util/spring-util.xsd">
+
+	<bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<property name="locations">
+			<list>
+				<value>classpath*:jdbc.properties</value>
+				<value>classpath*:log4j.properties</value>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="ds0" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close">
+		<!-- 基本属性 url、user、password -->
+		<property name="url" value="${ds0_jdbc_url}" />
+		<property name="username" value="${ds0_jdbc_username}" />
+		<property name="password" value="${ds0_jdbc_password}" />
+		<!-- 配置初始化大小、最小、最大 -->
+		<property name="initialSize" value="40" />
+		<property name="minIdle" value="5" />
+		<property name="maxActive" value="1000" />
+		<!-- 配置获取连接等待超时的时间 -->
+		<property name="maxWait" value="60000" />
+		<!-- 配置间隔多久才进行一次检测，检测需要关闭的空闲连接，单位是毫秒 -->
+		<property name="timeBetweenEvictionRunsMillis" value="60000" />
+		<!-- 配置一个连接在池中最小生存的时间，单位是毫秒 -->
+		<property name="minEvictableIdleTimeMillis" value="300000" />
+		<property name="validationQuery" value="SELECT 'x'" />
+		<property name="testWhileIdle" value="true" />
+		<property name="testOnBorrow" value="false" />
+		<property name="testOnReturn" value="false" />
+		<!-- 打开PSCache，并且指定每个连接上PSCache的大小 -->
+		<property name="poolPreparedStatements" value="true" />
+		<property name="maxPoolPreparedStatementPerConnectionSize" value="20" />
+		<!-- 配置监控统计拦截的filters -->
+		<property name="filters" value="stat" />
+	</bean>
+
+	<!-- 配置Mybatis的文件 ，mapperLocations配置**Mapper.xml文件位置，configLocation配置mybatis-config文件位置 -->
+	<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<property name="dataSource" ref="ds0" />
+		<property name="mapperLocations" value="classpath*:com/stip/net/dao/**/*.xml" />
+	</bean>
+	
+	<!-- 自动扫描了所有的XxxxMapper.xml对应的mapper接口文件，这样就不用一个一个手动配置Mpper的映射了，只要Mapper接口类和Mapper映射文件对应起来就可以了。 -->
+	<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+		<property name="basePackage" value="com.stip.net.dao" />
+		<property name="sqlSessionFactoryBeanName" value="sqlSessionFactory"/>
+	</bean>
+	
+	<!--配置事务管理器 -->
+    <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource" ref="ds0" />
+    </bean>
+    
+	<!-- 配置事务特性  -->
+	<tx:advice id="txAdvice" transaction-manager="transactionManager">
+	  <tx:attributes>
+	      <tx:method name="select*" read-only="true" propagation="REQUIRED"/>
+	      <tx:method name="find*" read-only="true" propagation="REQUIRED"/>
+	      <tx:method name="save*" propagation="REQUIRED" isolation="REPEATABLE_READ" rollback-for="Throwable" />
+	      <tx:method name="insert*" propagation="REQUIRED" isolation="REPEATABLE_READ" rollback-for="Throwable" />
+	      <tx:method name="update*" propagation="REQUIRED" isolation="REPEATABLE_READ" rollback-for="Throwable" />
+	      <tx:method name="add*" propagation="REQUIRED" isolation="REPEATABLE_READ" rollback-for="Throwable" />
+	      <tx:method name="delete*" propagation="REQUIRED" isolation="REPEATABLE_READ" rollback-for="Throwable"/>
+	      <tx:method name="*" read-only="true"/>
+	  </tx:attributes>
+	</tx:advice>
+	
+	<!-- 配置事务代理拦截器   -->
+	<bean id="baseTransactionProxy" abstract="true" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
+		<property name="transactionManager">
+	    	<ref bean="transactionManager"/>
+		</property>
+		<property name="transactionAttributes">
+		  <props>
+			<prop key="insert*">PROPAGATION_REQUIRED</prop>
+			<prop key="update*">PROPAGATION_REQUIRED</prop>
+			<prop key="delete*">PROPAGATION_REQUIRED</prop>
+			<prop key="*">PROPAGATION_REQUIRED,readOnly</prop>    
+		  </props>   
+		</property>
+	 </bean> 
+	
+	<aop:config>
+	  <aop:pointcut id="baseServiceMethods" expression="execution(* com.stip.net.*.*(..))"/>
+	  <aop:advisor advice-ref="txAdvice" pointcut-ref="baseServiceMethods"/>
+	</aop:config>
+	<aop:aspectj-autoproxy />
+
+    <mvc:annotation-driven />
+	<!-- 启用spring mvc 注解 -->
+	<context:annotation-config />
+	<!-- 设置使用注解的类所在的jar包 -->
+	<context:component-scan base-package="com.stip" >
+		<!-- 扫描@Controller -->
+		<context:include-filter type="annotation" expression="org.springframework.stereotype.Controller" />
+		<!-- 控制器增强，使一个Contoller成为全局的异常处理类，类中用@ExceptionHandler方法注解的方法可以处理所有Controller发生的异常 -->
+		<context:include-filter type="annotation" expression="org.springframework.web.bind.annotation.ControllerAdvice" />
+	</context:component-scan>
+	<!-- 完成请求和注解POJO的映射 -->
+	<bean class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter" />
+	<bean class="org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor" />
+
+    <!--配置基于注解的声明式事务 默认使用注解来管理事务行为 -->
+	<tx:annotation-driven transaction-manager="transactionManager" proxy-target-class="true" />
+</beans>

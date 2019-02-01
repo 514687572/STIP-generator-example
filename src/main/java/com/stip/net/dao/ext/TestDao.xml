@@ -2,14 +2,15 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.stip.net.TestDao">
   <!--
-    文件的生成时间： 2019-01-30 09:52:09.
+    文件的生成时间： 2019-02-01 16:41:33.
     你应该把Mapper类的扩展方法的sql语句放在这个文件里面
   -->
   
   <insert id="batchInsert" parameterType="java.util.List">
-    insert into test (test, test1) values 
+    insert into test (test_id, test, test1) values 
     <foreach item='item' collection='list' separator=','  index=''>
-     (#{item.test,jdbcType=VARCHAR}, #{item.test1,jdbcType=VARCHAR}) 
+     (#{item.testId,jdbcType=INTEGER}, #{item.test,jdbcType=VARCHAR}, 
+      #{item.test1,jdbcType=VARCHAR}) 
     </foreach>
   </insert>
 </mapper>

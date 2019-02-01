@@ -7,5 +7,5 @@ import com.stip.net.service.TestService;
 import org.springframework.stereotype.Service;
 
 @Service
-public class TestServiceImpl extends BaseService<Test, TestExample, String> implements TestService {
+public class TestServiceImpl extends BaseService<Test, TestExample, Integer> implements TestService {
 }

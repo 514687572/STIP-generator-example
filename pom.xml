@@ -264,5 +264,22 @@
 				</configuration>
 			</plugin>
 		</plugins>
+		<resources>
+            <resource>
+                <directory>src/main/java</directory><!---设置编译的包-->
+                <includes>
+                    <include>**/*.xml</include><!---该路径下的.xml类型文件也要编译-->
+                </includes>
+                <filtering>false</filtering>
+            </resource>
+            <resource>
+                <directory>src/main/resources</directory><!---设置编译的包-->
+                <includes>
+                    <include>**/*.xml</include><!---该路径下的.xml类型文件也要编译-->
+                    <include>**/*.properties</include><!---该路径下的.properties类型文件也要编译-->
+                </includes>
+                <filtering>false</filtering>
+            </resource>
+        </resources>
 	</build>
 </project>
