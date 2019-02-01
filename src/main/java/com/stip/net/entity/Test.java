@@ -40,20 +40,6 @@ public class Test extends BaseModel<String> implements Serializable {
     }
 
     @Override
-    public boolean equals(Object that) {
-        if (this == that) {
-            return true;
-        }
-        if (that == null) {
-            return false;
-        }
-        if (getClass() != that.getClass()) {
-            return false;
-        }
-        Test other = (Test) that;
-    }
-
-    @Override
     public int hashCode() {
         final int prime = 31;
         int result = 1;
